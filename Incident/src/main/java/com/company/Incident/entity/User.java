@@ -1,7 +1,6 @@
 package com.company.Incident.entity;
 
-
-import java.sql.Date;
+import java.time.LocalDate;
 import java.util.List;
 
 import jakarta.persistence.Column;
@@ -19,7 +18,7 @@ import jakarta.persistence.Table;
 public class User {
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY )
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private int userId;
 	@Column
 	private String userFname;
@@ -30,29 +29,26 @@ public class User {
 	@Column
 	private String urole;
 	@Column
-	private Date birthDate;
+	private LocalDate birthDate;
 	@Column
 	private String address;
 	@Column
 	private String email;
 	@Column
 	private Long phoneNumber;
-	
-	@OneToOne
-	@JoinColumn(name ="created_by")
-	private User createdBy;
-	
 
 	@Column
-	private String createdDate;
-	
-	@OneToOne
-	@JoinColumn(name ="modified")
-	private User modifiedBy;
-	
+	private String createdBy;
+
 	@Column
-	private String modifiedDate;
-	
+	private LocalDate createdDate;
+
+	@Column
+	private String modifiedBy;
+
+	@Column
+	private LocalDate modifiedDate;
+
 	@ManyToMany(mappedBy = "users")
 	private List<Team> teams;
 
@@ -96,11 +92,11 @@ public class User {
 		this.urole = urole;
 	}
 
-	public Date getBirthDate() {
+	public LocalDate getBirthDate() {
 		return birthDate;
 	}
 
-	public void setBirthDate(Date birthDate) {
+	public void setBirthDate(LocalDate birthDate) {
 		this.birthDate = birthDate;
 	}
 
@@ -128,35 +124,35 @@ public class User {
 		this.phoneNumber = phoneNumber;
 	}
 
-	public User getCreatedBy() {
+	public String getCreatedBy() {
 		return createdBy;
 	}
 
-	public void setCreatedBy(User createdBy) {
+	public void setCreatedBy(String createdBy) {
 		this.createdBy = createdBy;
 	}
 
-	public String getCreatedDate() {
+	public LocalDate getCreatedDate() {
 		return createdDate;
 	}
 
-	public void setCreatedDate(String createdDate) {
+	public void setCreatedDate(LocalDate createdDate) {
 		this.createdDate = createdDate;
 	}
 
-	public User getModifiedBy() {
+	public String getModifiedBy() {
 		return modifiedBy;
 	}
 
-	public void setModifiedBy(User modifiedBy) {
+	public void setModifiedBy(String modifiedBy) {
 		this.modifiedBy = modifiedBy;
 	}
 
-	public String getModifiedDate() {
+	public LocalDate getModifiedDate() {
 		return modifiedDate;
 	}
 
-	public void setModifiedDate(String modifiedDate) {
+	public void setModifiedDate(LocalDate modifiedDate) {
 		this.modifiedDate = modifiedDate;
 	}
 
@@ -167,7 +163,5 @@ public class User {
 	public void setTeams(List<Team> teams) {
 		this.teams = teams;
 	}
-	
-	
-}
 
+}

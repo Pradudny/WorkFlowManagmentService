@@ -1,7 +1,14 @@
 package com.company.Incident.entity;
 
+import java.time.LocalDate;
+
+import com.company.Incident.enums.Priority;
+import com.company.Incident.enums.Status;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -10,36 +17,39 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
 @Entity
-@Table(name="incidents")
-public class IncidentEntity{
+@Table(name = "incidents")
+public class IncidentEntity {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column
 	private int incidentId;
 	@Column
 	private String title;
-	
+	@Column
+	private String Description;
 	@Column
 	private String createdBy;
 	@Column
 	private String createdDate;
-	
+
 	@Column
 	private String modifiedBy;
 	@Column
 	private String modifiedDate;
+
+	@Enumerated(EnumType.STRING)
 	@Column
-	private String Description;
+	private Status status;
+
+	@Enumerated(EnumType.STRING)
 	@Column
-	private String status;
-	@Column
-	private int priority;
+	private Priority priority;
 	@Column
 	private String AssignmentGroup;
-
+	@Column
+	private LocalDate slaDate;
 	@ManyToOne
-	@JoinColumn(name="assidned_to")
+	@JoinColumn(name = "assidned_to")
 	private User assidnedTo;
 
 	public int getIncidentId() {
@@ -98,19 +108,19 @@ public class IncidentEntity{
 		Description = description;
 	}
 
-	public String getStatus() {
+	public Status getStatus() {
 		return status;
 	}
 
-	public void setStatus(String status) {
+	public void setStatus(Status status) {
 		this.status = status;
 	}
 
-	public int getPriority() {
+	public Priority getPriority() {
 		return priority;
 	}
 
-	public void setPriority(int priority) {
+	public void setPriority(Priority priority) {
 		this.priority = priority;
 	}
 
@@ -122,6 +132,14 @@ public class IncidentEntity{
 		AssignmentGroup = assignmentGroup;
 	}
 
+	public LocalDate getSlaDate() {
+		return slaDate;
+	}
+
+	public void setSlaDate(LocalDate slaDate) {
+		this.slaDate = slaDate;
+	}
+
 	public User getAssidnedTo() {
 		return assidnedTo;
 	}
@@ -129,7 +147,5 @@ public class IncidentEntity{
 	public void setAssidnedTo(User assidnedTo) {
 		this.assidnedTo = assidnedTo;
 	}
-	
-	
-}
 
+}
