@@ -126,6 +126,8 @@ public class IncidentServiceImpl implements IncidentService {
 		}
 		if (entity.getAssidnedTo() != null) {
 			dto.setAssignedTo(entity.getAssidnedTo().getUserFname() + " " + entity.getAssidnedTo().getUserLname());
+			dto.setAssignedToId(entity.getAssidnedTo().getUserId());
+
 		}
 		return dto;
 	}
