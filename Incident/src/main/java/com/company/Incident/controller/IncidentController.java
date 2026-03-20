@@ -24,7 +24,7 @@ public class IncidentController {
 	@Autowired
 	private IncidentService incidentService;
 
-	@PostMapping
+	@PostMapping("/add-incident")
 	public ResponseEntity<IncidentDTO> createIncident(@RequestBody IncidentDTO incidentDTO) {
 		IncidentDTO created = incidentService.createIncident(incidentDTO);
 		return new ResponseEntity<>(created, HttpStatus.CREATED);
@@ -43,7 +43,8 @@ public class IncidentController {
 	}
 
 	@PutMapping("/{incidentId}")
-	public ResponseEntity<IncidentDTO> updateIncident(@PathVariable int incidentId, @RequestBody IncidentDTO incidentDTO) {
+	public ResponseEntity<IncidentDTO> updateIncident(@PathVariable int incidentId,
+			@RequestBody IncidentDTO incidentDTO) {
 		IncidentDTO updated = incidentService.updateIncident(incidentId, incidentDTO);
 		return ResponseEntity.ok(updated);
 	}

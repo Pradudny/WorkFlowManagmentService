@@ -5,6 +5,7 @@ import java.beans.JavaBean;
 @JavaBean
 public class UserDTO {
 
+	private int userId;
 	private String userFname;
 	private String userLname;
 	private String department;
@@ -15,6 +16,14 @@ public class UserDTO {
 	private Long phoneNumber;
 	private String createdBy;
 	private String createdDate;
+
+	public int getUserId() {
+		return userId;
+	}
+
+	public void setUserId(int userId) {
+		this.userId = userId;
+	}
 
 	public String getUserFname() {
 		return userFname;

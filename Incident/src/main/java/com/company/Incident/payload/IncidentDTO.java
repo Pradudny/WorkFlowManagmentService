@@ -13,10 +13,19 @@ public class IncidentDTO {
 	private String priority;
 	private String assignmentGroup;
 	private String slaDate;
+	private int assignedToId;
 	private String assignedTo;
 
 	public int getIncidentId() {
 		return incidentId;
+	}
+
+	public int getAssignedToId() {
+		return assignedToId;
+	}
+
+	public void setAssignedToId(int assignedToId) {
+		this.assignedToId = assignedToId;
 	}
 
 	public void setIncidentId(int incidentId) {
