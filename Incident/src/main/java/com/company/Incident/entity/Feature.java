@@ -1,6 +1,5 @@
 package com.company.Incident.entity;
 
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -9,30 +8,40 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
 @Entity
-@Table(name="features")
+@Table(name = "features")
 public class Feature {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private int featureId;
-	
+
 	@Column
 	private String featureName;
-	
+
 	@Column
 	private String featureDesc;
-	
+
 	@Column
 	private String createdBy;
-	
+
 	@Column
 	private String modifiedBy;
-	
-	@Column 
+
+	@Column
 	private String createdDate;
-	
+
 	@Column
 	private String modifiedDate;
+	@Column
+	private String featureGroup;
+
+	public String getFeatureGroup() {
+		return featureGroup;
+	}
+
+	public void setFeatureGroup(String featureGroup) {
+		this.featureGroup = featureGroup;
+	}
 
 	public int getFeatureId() {
 		return featureId;
@@ -89,8 +98,5 @@ public class Feature {
 	public void setModifiedDate(String modifiedDate) {
 		this.modifiedDate = modifiedDate;
 	}
-	
-	
-	
 
 }
