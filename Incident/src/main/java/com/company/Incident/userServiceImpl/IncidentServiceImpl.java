@@ -11,12 +11,16 @@ import com.company.Incident.entity.IncidentEntity;
 import com.company.Incident.entity.User;
 import com.company.Incident.enums.Priority;
 import com.company.Incident.enums.Status;
+import com.company.Incident.exception.ResourceNotFoundException;
 import com.company.Incident.payload.IncidentDTO;
 import com.company.Incident.repository.IncidentRepository;
 import com.company.Incident.repository.UserRepository;
 import com.company.Incident.service.IncidentService;
 
+import lombok.extern.slf4j.Slf4j;
+
 @Service
+@Slf4j
 public class IncidentServiceImpl implements IncidentService {
 
 	@Autowired
@@ -26,30 +30,52 @@ public class IncidentServiceImpl implements IncidentService {
 	private UserRepository userRepository;
 
 	@Override
-	public IncidentDTO createIncident(IncidentDTO incidentDTO) {
+	public IncidentDTO createIncident(IncidentDTO incidentDTO, String email) {
+
+		log.info("IncidentServiceImpl::createIncident::Creating new incident with title: {}", incidentDTO.getTitle());
 		IncidentEntity incident = mapToEntity(incidentDTO);
+		incident.setStatus(Status.OPEN);
+
+		if (email != null && !email.isBlank()) {
+			log.info("IncidentServiceImpl::createIncident::Setting createdBy to email: {}", email);
+			incident.setCreatedBy(email);
+		} else if (incidentDTO.getCreatedBy() != null && !incidentDTO.getCreatedBy().isBlank()) {
+			log.info("IncidentServiceImpl::createIncident::Setting createdBy from DTO: {}", incidentDTO.getCreatedBy());
+			incident.setCreatedBy(incidentDTO.getCreatedBy());
+		}
 		incident.setCreatedDate(LocalDate.now().toString());
 		IncidentEntity saved = incidentRepository.save(incident);
+		log.info("IncidentServiceImpl::createIncident::Created and saved incident: {}");
+
 		return mapToDTO(saved);
 	}
 
 	@Override
 	public IncidentDTO getIncidentById(int incidentId) {
+
+		log.info("IncidentServiceImpl::getIncidentById::Fetching incident with id: {}", incidentId);
 		IncidentEntity incident = incidentRepository.findById(incidentId)
-				.orElseThrow(() -> new RuntimeException("Incident not found with id: " + incidentId));
+
+				.orElseThrow(() -> new ResourceNotFoundException("Incident not found for this id : " + incidentId));
+		log.info("IncidentServiceImpl::getIncidentById::Fetched incident: {}", incident);
 		return mapToDTO(incident);
 	}
 
 	@Override
 	public List<IncidentDTO> getAllIncidents() {
+		log.info("IncidentServiceImpl::getAllIncidents::Fetching all incidents");
 		List<IncidentEntity> incidents = incidentRepository.findAll();
+
+		log.info("IncidentServiceImpl::getAllIncidents::Fetched incidentsz");
 		return incidents.stream().map(this::mapToDTO).collect(Collectors.toList());
 	}
 
 	@Override
 	public IncidentDTO updateIncident(int incidentId, IncidentDTO incidentDTO) {
+		log.info("IncidentServiceImpl::updateIncident::Updating incident with id: {}", incidentId);
+
 		IncidentEntity incident = incidentRepository.findById(incidentId)
-				.orElseThrow(() -> new RuntimeException("Incident not found with id: " + incidentId));
+				.orElseThrow(() -> new ResourceNotFoundException("Incident not found with id: " + incidentId));
 
 		incident.setTitle(incidentDTO.getTitle());
 		incident.setDescription(incidentDTO.getDescription());
@@ -72,14 +98,17 @@ public class IncidentServiceImpl implements IncidentService {
 		incident.setModifiedDate(LocalDate.now().toString());
 
 		IncidentEntity updated = incidentRepository.save(incident);
+
+		log.info("IncidentServiceImpl::updateIncident::Updated incident");
 		return mapToDTO(updated);
 	}
 
 	@Override
 	public void deleteIncident(int incidentId) {
 		IncidentEntity incident = incidentRepository.findById(incidentId)
-				.orElseThrow(() -> new RuntimeException("Incident not found with id: " + incidentId));
+				.orElseThrow(() -> new ResourceNotFoundException("Incident not found with id: " + incidentId));
 		incidentRepository.delete(incident);
+		log.info("IncidentServiceImpl::deleteIncident::Deleted incident with id");
 	}
 
 	private IncidentEntity mapToEntity(IncidentDTO dto) {

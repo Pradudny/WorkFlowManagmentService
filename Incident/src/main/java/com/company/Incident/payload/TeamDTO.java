@@ -2,18 +2,45 @@ package com.company.Incident.payload;
 
 import java.util.List;
 
+import org.springframework.format.annotation.DateTimeFormat;
+
+import jakarta.validation.constraints.Digits;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class TeamDTO {
 
+	@Digits(integer = 10, fraction = 0, message = "Team id must be a valid number")
 	private int teamId;
+
+	@NotBlank(message = "Team name is required")
 	private String tName;
+
+	@Pattern(regexp = "^[0-9A-Za-z .,_-]*$", message = "Team description can only contain letters, numbers, spaces, and basic punctuation")
 	private String tDesc;
+
 	private int roleId;
+
 	private String roleName;
+
 	private String createdBy;
+
+	@DateTimeFormat(pattern = "yyyy-MM-dd")
 	private String createdDate;
+
 	private String modifiedBy;
+
+	@DateTimeFormat(pattern = "yyyy-MM-dd")
 	private String modifiedDate;
+
 	private List<Integer> userIds;
+
 	private List<String> userNames;
 
 	public int getTeamId() {

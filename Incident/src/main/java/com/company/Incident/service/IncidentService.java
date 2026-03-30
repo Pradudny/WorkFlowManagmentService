@@ -6,7 +6,7 @@ import com.company.Incident.payload.IncidentDTO;
 
 public interface IncidentService {
 
-	IncidentDTO createIncident(IncidentDTO incidentDTO);
+	IncidentDTO createIncident(IncidentDTO incidentDTO, String email);
 
 	IncidentDTO getIncidentById(int incidentId);
 

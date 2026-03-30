@@ -10,9 +10,13 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.Table;
+import lombok.Data;
+import lombok.RequiredArgsConstructor;
 
 @Entity
 @Table(name = "users")
+@Data
+@RequiredArgsConstructor
 public class User {
 
 	@Id
@@ -22,10 +26,9 @@ public class User {
 	private String userFname;
 	@Column
 	private String userLname;
+
 	@Column
 	private String department;
-	@Column
-	private String urole;
 	@Column
 	private LocalDate birthDate;
 	@Column
@@ -33,8 +36,9 @@ public class User {
 	@Column
 	private String email;
 	@Column
-	private Long phoneNumber;
-
+	private String phoneNumber;
+	@Column
+	private String password;
 	@Column
 	private String createdBy;
 
@@ -82,14 +86,6 @@ public class User {
 		this.department = department;
 	}
 
-	public String getUrole() {
-		return urole;
-	}
-
-	public void setUrole(String urole) {
-		this.urole = urole;
-	}
-
 	public LocalDate getBirthDate() {
 		return birthDate;
 	}
@@ -114,11 +110,11 @@ public class User {
 		this.email = email;
 	}
 
-	public Long getPhoneNumber() {
+	public String getPhoneNumber() {
 		return phoneNumber;
 	}
 
-	public void setPhoneNumber(Long phoneNumber) {
+	public void setPhoneNumber(String phoneNumber) {
 		this.phoneNumber = phoneNumber;
 	}
 

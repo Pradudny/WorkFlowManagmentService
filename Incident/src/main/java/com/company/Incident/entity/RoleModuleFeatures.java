@@ -10,30 +10,30 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
 @Entity
-@Table(name="role_module_features")
+@Table(name = "role_module_features")
 public class RoleModuleFeatures {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private int rmfId;
-	
+
 	@ManyToOne
-	@JoinColumn(name="role_id")
+	@JoinColumn(name = "role_id")
 	private Role roleId;
-	
+
 	@ManyToOne
-	@JoinColumn(name="featureModule_id")
-	private FeatureModule featureModuleId;
-	
+	@JoinColumn(name = "featureModule_id")
+	private ModuleFeature featureModuleId;
+
 	@Column
 	private String createdBy;
-	
+
 	@Column
 	private String ModifiedBy;
-	
+
 	@Column
 	private String createdDate;
-	
+
 	public int getRmfId() {
 		return rmfId;
 	}
@@ -50,11 +50,11 @@ public class RoleModuleFeatures {
 		this.roleId = roleId;
 	}
 
-	public FeatureModule getFeatureModuleId() {
+	public ModuleFeature getFeatureModuleId() {
 		return featureModuleId;
 	}
 
-	public void setFeatureModuleId(FeatureModule featureModuleId) {
+	public void setFeatureModuleId(ModuleFeature featureModuleId) {
 		this.featureModuleId = featureModuleId;
 	}
 
@@ -82,6 +82,4 @@ public class RoleModuleFeatures {
 		this.createdDate = createdDate;
 	}
 
-	
-	
 }

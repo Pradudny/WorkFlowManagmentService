@@ -11,7 +11,10 @@ import com.company.Incident.payload.ModuleDTO;
 import com.company.Incident.repository.ModuleRepository;
 import com.company.Incident.service.ModuleService;
 
+import lombok.extern.slf4j.Slf4j;
+
 @Service
+@Slf4j
 public class ModuleServiceImpl implements ModuleService {
 
 	@Autowired
@@ -19,7 +22,11 @@ public class ModuleServiceImpl implements ModuleService {
 
 	@Override
 	public List<ModuleDTO> getAllModules() {
+
+		log.info("ModuleServiceImpl::getAllModules::Fetching all modules");
 		List<Module> modules = moduleRepository.findAll();
+
+		log.info("ModuleServiceImpl::getAllModules::Fetched modules: {}", modules);
 		return modules.stream().map(this::mapToDTO).collect(Collectors.toList());
 	}
 

@@ -32,6 +32,7 @@ public class Feature {
 
 	@Column
 	private String modifiedDate;
+
 	@Column
 	private String featureGroup;
 
