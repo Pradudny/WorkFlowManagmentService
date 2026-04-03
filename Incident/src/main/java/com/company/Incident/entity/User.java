@@ -9,6 +9,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToMany;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
@@ -53,6 +54,9 @@ public class User {
 
 	@ManyToMany(mappedBy = "users")
 	private List<Team> teams;
+
+	@OneToMany(mappedBy = "assignedTo")
+	private List<Task> tasks;
 
 	public int getUserId() {
 		return userId;

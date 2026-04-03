@@ -27,7 +27,10 @@ public class ModuleServiceImpl implements ModuleService {
 		List<Module> modules = moduleRepository.findAll();
 
 		log.info("ModuleServiceImpl::getAllModules::Fetched modules: {}", modules);
-		return modules.stream().map(this::mapToDTO).collect(Collectors.toList());
+		return modules.stream()
+				.filter(module -> module.getModuleName() != null && !module.getModuleName().equalsIgnoreCase("All"))
+				.map(this::mapToDTO)
+				.collect(Collectors.toList());
 	}
 
 	private ModuleDTO mapToDTO(Module module) {
