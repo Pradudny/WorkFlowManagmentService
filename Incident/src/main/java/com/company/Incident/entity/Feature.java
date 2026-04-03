@@ -32,6 +32,16 @@ public class Feature {
 
 	@Column
 	private String modifiedDate;
+	@Column
+	private String featureGroup;
+
+	public String getFeatureGroup() {
+		return featureGroup;
+	}
+
+	public void setFeatureGroup(String featureGroup) {
+		this.featureGroup = featureGroup;
+	}
 
 	@Column
 	private String featureGroup;
