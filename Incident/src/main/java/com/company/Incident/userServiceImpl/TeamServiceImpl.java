@@ -11,13 +11,17 @@ import org.springframework.stereotype.Service;
 import com.company.Incident.entity.Role;
 import com.company.Incident.entity.Team;
 import com.company.Incident.entity.User;
+import com.company.Incident.exception.ResourceNotFoundException;
 import com.company.Incident.payload.TeamDTO;
 import com.company.Incident.repository.RoleRepository;
 import com.company.Incident.repository.TeamRepository;
 import com.company.Incident.repository.UserRepository;
 import com.company.Incident.service.TeamService;
 
+import lombok.extern.slf4j.Slf4j;
+
 @Service
+@Slf4j
 public class TeamServiceImpl implements TeamService {
 
 	@Autowired
@@ -31,16 +35,27 @@ public class TeamServiceImpl implements TeamService {
 
 	@Override
 	public TeamDTO addTeam(TeamDTO teamDTO) {
+
+		log.info("TeamServiceImpl::addTeam::Adding new team.");
+
 		Team team = mapToEntity(teamDTO);
 		team.setCreatedDate(LocalDate.now().toString());
 		Team saved = teamRepository.save(team);
+
+		log.info("TeamServiceImpl::addTeam::Added and saved team.");
 		return mapToDTO(saved);
 	}
 
 	@Override
 	public TeamDTO getTeamDetails(int teamId) {
+		if (teamId <= 0) {
+			log.error("TeamServiceImpl::getTeamDetails::Invalid team id: {}", teamId);
+			throw new IllegalArgumentException("Team ID must be a positive integer");
+		}
 		Team team = teamRepository.findById(teamId)
-				.orElseThrow(() -> new RuntimeException("Team not found with id: " + teamId));
+				.orElseThrow(() -> new ResourceNotFoundException("Team not found with id: " + teamId));
+
+		log.info("TeamServiceImpl::getTeamDetails::Fetched team details for team id.");
 		return mapToDTO(team);
 	}
 
@@ -52,8 +67,10 @@ public class TeamServiceImpl implements TeamService {
 
 	@Override
 	public TeamDTO updateTeam(int teamId, TeamDTO teamDTO) {
+
+		log.info("TeamServiceImpl::updateTeam::Updating team with id.");
 		Team team = teamRepository.findById(teamId)
-				.orElseThrow(() -> new RuntimeException("Team not found with id: " + teamId));
+				.orElseThrow(() -> new ResourceNotFoundException("Team not found with id: " + teamId));
 
 		team.settName(teamDTO.gettName());
 		team.settDesc(teamDTO.gettDesc());
@@ -72,6 +89,7 @@ public class TeamServiceImpl implements TeamService {
 		team.setModifiedBy(teamDTO.getModifiedBy());
 		team.setModifiedDate(LocalDate.now().toString());
 
+		log.info("TeamServiceImpl::updateTeam::Updated team details, saving changes.");
 		Team updated = teamRepository.save(team);
 		return mapToDTO(updated);
 	}
@@ -79,7 +97,7 @@ public class TeamServiceImpl implements TeamService {
 	@Override
 	public TeamDTO addMembers(int teamId, List<Integer> userIds) {
 		Team team = teamRepository.findById(teamId)
-				.orElseThrow(() -> new RuntimeException("Team not found with id: " + teamId));
+				.orElseThrow(() -> new ResourceNotFoundException("Team not found with id: " + teamId));
 
 		List<User> newUsers = userRepository.findAllById(userIds);
 		List<User> existingUsers = team.getUsers();
@@ -95,13 +113,19 @@ public class TeamServiceImpl implements TeamService {
 		team.setModifiedDate(LocalDate.now().toString());
 
 		Team updated = teamRepository.save(team);
+
+		log.info("TeamServiceImpl::addMembers::Added members to team.");
+
 		return mapToDTO(updated);
 	}
 
 	@Override
 	public TeamDTO removeMembers(int teamId, List<Integer> userIds) {
+
+		log.info("TeamServiceImpl::removeMembers::Removing members from team.");
+
 		Team team = teamRepository.findById(teamId)
-				.orElseThrow(() -> new RuntimeException("Team not found with id: " + teamId));
+				.orElseThrow(() -> new ResourceNotFoundException("Team not found with id: " + teamId));
 
 		List<User> existingUsers = team.getUsers();
 		if (existingUsers != null) {
@@ -111,13 +135,17 @@ public class TeamServiceImpl implements TeamService {
 		team.setModifiedDate(LocalDate.now().toString());
 
 		Team updated = teamRepository.save(team);
+		log.info("TeamServiceImpl::removeMembers::Removed members from team.");
 		return mapToDTO(updated);
 	}
 
 	@Override
 	public void deleteTeam(int teamId) {
+
+		log.info("TeamServiceImpl::deleteTeam::Deleting team with id.");
 		Team team = teamRepository.findById(teamId)
-				.orElseThrow(() -> new RuntimeException("Team not found with id: " + teamId));
+				.orElseThrow(() -> new ResourceNotFoundException("Team not found with id: " + teamId));
+		log.info("TeamServiceImpl::deleteTeam::Found team, proceeding to delete.");
 		teamRepository.delete(team);
 	}
 

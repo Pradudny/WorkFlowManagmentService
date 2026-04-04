@@ -10,30 +10,30 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
 @Entity
-@Table(name="module_features")
-public class FeatureModule{
-	
+@Table(name = "module_features")
+public class ModuleFeature {
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private int moduleFeaturesId;
-	
+
 	@ManyToOne
-	@JoinColumn(name="feature_id")
+	@JoinColumn(name = "feature_id")
 	private Feature featureId;
-	
+
 	@ManyToOne
-	@JoinColumn(name="module_id")
+	@JoinColumn(name = "module_id")
 	private Module moduleId;
-	
+
 	@Column
 	private String createdBy;
-	
+
 	@Column
 	private String modifiedBy;
-	
+
 	@Column
 	private String createdDate;
-	
+
 	@Column
 	private String modifiedDate;
 
@@ -92,7 +92,5 @@ public class FeatureModule{
 	public void setModifiedDate(String modifiedDate) {
 		this.modifiedDate = modifiedDate;
 	}
-	
-	
 
 }

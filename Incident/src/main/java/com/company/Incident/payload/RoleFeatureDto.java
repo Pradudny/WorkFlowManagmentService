@@ -2,9 +2,22 @@ package com.company.Incident.payload;
 
 import java.util.List;
 
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
+
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+@SuperBuilder
 public class RoleFeatureDto {
 
+	@NotNull(message = "Roles list cannot be null")
 	private List<RoleInfo> roles;
+	@NotNull(message = "Features list cannot be null")
 	private List<FeatureInfo> features;
 
 	private RoleFeatureDto(Builder builder) {
@@ -34,6 +47,7 @@ public class RoleFeatureDto {
 			this.name = builder.name;
 		}
 
+		@Positive(message = "Role ID must be a positive integer")
 		public int getId() {
 			return id;
 		}
@@ -48,6 +62,7 @@ public class RoleFeatureDto {
 
 		public static class RoleInfoBuilder {
 
+			@Positive(message = "Role ID must be a positive integer")
 			private int id;
 			private String name;
 

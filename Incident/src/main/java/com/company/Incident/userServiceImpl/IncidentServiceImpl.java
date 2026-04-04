@@ -7,16 +7,22 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.company.Incident.entity.IncidentEntity;
+import com.company.Incident.entity.Incident;
 import com.company.Incident.entity.User;
 import com.company.Incident.enums.Priority;
 import com.company.Incident.enums.Status;
+import com.company.Incident.exception.ResourceNotFoundException;
+import com.company.Incident.payload.IncidentCompletedMessage;
 import com.company.Incident.payload.IncidentDTO;
 import com.company.Incident.repository.IncidentRepository;
 import com.company.Incident.repository.UserRepository;
+import com.company.Incident.service.IncidentKafkaProducer;
 import com.company.Incident.service.IncidentService;
 
+import lombok.extern.slf4j.Slf4j;
+
 @Service
+@Slf4j
 public class IncidentServiceImpl implements IncidentService {
 
 	@Autowired
@@ -25,35 +31,61 @@ public class IncidentServiceImpl implements IncidentService {
 	@Autowired
 	private UserRepository userRepository;
 
+	@Autowired
+	private IncidentKafkaProducer incidentKafkaProducer;
+
 	@Override
-	public IncidentDTO createIncident(IncidentDTO incidentDTO) {
-		IncidentEntity incident = mapToEntity(incidentDTO);
+	public IncidentDTO createIncident(IncidentDTO incidentDTO, String email) {
+
+		log.info("IncidentServiceImpl::createIncident::Creating new incident with title: {}", incidentDTO.getTitle());
+		Incident incident = mapToEntity(incidentDTO);
+		incident.setStatus(Status.OPEN);
+
+		if (email != null && !email.isBlank()) {
+			log.info("IncidentServiceImpl::createIncident::Setting createdBy to email: {}", email);
+			incident.setCreatedBy(email);
+		} else if (incidentDTO.getCreatedBy() != null && !incidentDTO.getCreatedBy().isBlank()) {
+			log.info("IncidentServiceImpl::createIncident::Setting createdBy from DTO: {}", incidentDTO.getCreatedBy());
+			incident.setCreatedBy(incidentDTO.getCreatedBy());
+		}
 		incident.setCreatedDate(LocalDate.now().toString());
-		IncidentEntity saved = incidentRepository.save(incident);
+		Incident saved = incidentRepository.save(incident);
+		log.info("IncidentServiceImpl::createIncident::Created and saved incident: {}");
+
 		return mapToDTO(saved);
 	}
 
 	@Override
 	public IncidentDTO getIncidentById(int incidentId) {
-		IncidentEntity incident = incidentRepository.findById(incidentId)
-				.orElseThrow(() -> new RuntimeException("Incident not found with id: " + incidentId));
+
+		log.info("IncidentServiceImpl::getIncidentById::Fetching incident with id: {}", incidentId);
+		Incident incident = incidentRepository.findById(incidentId)
+
+				.orElseThrow(() -> new ResourceNotFoundException("Incident not found for this id : " + incidentId));
+		log.info("IncidentServiceImpl::getIncidentById::Fetched incident: {}", incident);
 		return mapToDTO(incident);
 	}
 
 	@Override
 	public List<IncidentDTO> getAllIncidents() {
-		List<IncidentEntity> incidents = incidentRepository.findAll();
+		log.info("IncidentServiceImpl::getAllIncidents::Fetching all incidents");
+		List<Incident> incidents = incidentRepository.findAll();
+
+		log.info("IncidentServiceImpl::getAllIncidents::Fetched incidentsz");
 		return incidents.stream().map(this::mapToDTO).collect(Collectors.toList());
 	}
 
 	@Override
 	public IncidentDTO updateIncident(int incidentId, IncidentDTO incidentDTO) {
-		IncidentEntity incident = incidentRepository.findById(incidentId)
-				.orElseThrow(() -> new RuntimeException("Incident not found with id: " + incidentId));
+		log.info("IncidentServiceImpl::updateIncident::Updating incident with id: {}", incidentId);
 
+		Incident incident = incidentRepository.findById(incidentId)
+				.orElseThrow(() -> new ResourceNotFoundException("Incident not found with id: " + incidentId));
+
+		Status previousStatus = incident.getStatus();
 		incident.setTitle(incidentDTO.getTitle());
 		incident.setDescription(incidentDTO.getDescription());
-		if (incidentDTO.getStatus() != null) {
+		if (incidentDTO.getStatus() != null && !incidentDTO.getStatus().isBlank()) {
 			incident.setStatus(Status.valueOf(incidentDTO.getStatus()));
 		}
 		if (incidentDTO.getPriority() != null) {
@@ -71,19 +103,38 @@ public class IncidentServiceImpl implements IncidentService {
 		incident.setModifiedBy(incidentDTO.getModifiedBy());
 		incident.setModifiedDate(LocalDate.now().toString());
 
-		IncidentEntity updated = incidentRepository.save(incident);
+		Incident updated = incidentRepository.save(incident);
+
+		if (previousStatus != Status.RESOLVED && updated.getStatus() == Status.RESOLVED) {
+			log.info("Incident status changed from {} to RESOLVED for incidentId={}. Publishing Kafka event.",
+					previousStatus, incidentId);
+			IncidentCompletedMessage completedMessage = new IncidentCompletedMessage(
+					updated.getIncidentId(),
+					updated.getTitle(),
+					updated.getStatus().name(),
+					updated.getModifiedBy(),
+					updated.getModifiedDate(),
+					previousStatus.name());
+
+			incidentKafkaProducer.publishIncidentCompleted(completedMessage);
+		} else {
+			log.info("Incident update did not trigger Kafka event. previousStatus={}, newStatus={}",
+					previousStatus, updated.getStatus());
+		}
 		return mapToDTO(updated);
+
 	}
 
 	@Override
 	public void deleteIncident(int incidentId) {
-		IncidentEntity incident = incidentRepository.findById(incidentId)
-				.orElseThrow(() -> new RuntimeException("Incident not found with id: " + incidentId));
+		Incident incident = incidentRepository.findById(incidentId)
+				.orElseThrow(() -> new ResourceNotFoundException("Incident not found with id: " + incidentId));
 		incidentRepository.delete(incident);
+		log.info("IncidentServiceImpl::deleteIncident::Deleted incident with id");
 	}
 
-	private IncidentEntity mapToEntity(IncidentDTO dto) {
-		IncidentEntity entity = new IncidentEntity();
+	private Incident mapToEntity(IncidentDTO dto) {
+		Incident entity = new Incident();
 		entity.setTitle(dto.getTitle());
 		entity.setDescription(dto.getDescription());
 		entity.setCreatedBy(dto.getCreatedBy());
@@ -105,7 +156,7 @@ public class IncidentServiceImpl implements IncidentService {
 		return entity;
 	}
 
-	private IncidentDTO mapToDTO(IncidentEntity entity) {
+	private IncidentDTO mapToDTO(Incident entity) {
 		IncidentDTO dto = new IncidentDTO();
 		dto.setIncidentId(entity.getIncidentId());
 		dto.setTitle(entity.getTitle());

@@ -15,4 +15,6 @@ public interface UserService {
 	UserDTO updateUser(int userId, UserDTO userDTO);
 
 	void deleteUser(int userId);
+
+	String authorizeUser(String action, String resource, String authorizationHeader, String email);
 }

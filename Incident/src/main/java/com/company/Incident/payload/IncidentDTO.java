@@ -1,122 +1,57 @@
 package com.company.Incident.payload;
 
+import org.springframework.format.annotation.DateTimeFormat;
+
+import jakarta.validation.constraints.Digits;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
+
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+@SuperBuilder
 public class IncidentDTO {
 
+	@Digits(integer = 10, fraction = 0, message = "Incident ID must be a valid number")
 	private int incidentId;
+
+	@Size(min = 1, max = 100, message = "Title must be between 1 and 100 characters")
+	@NotNull(message = "Title is required")
 	private String title;
+
+	@Pattern(regexp = "^[a-zA-Z0-9 .,!?-]+$", message = "Description can only contain letters, numbers, spaces, and basic punctuation")
+	@NotNull(message = "Description is required")
 	private String description;
+
 	private String createdBy;
+
+	@DateTimeFormat(pattern = "yyyy-MM-dd")
 	private String createdDate;
+
 	private String modifiedBy;
+
+	@DateTimeFormat(pattern = "yyyy-MM-dd")
 	private String modifiedDate;
+
+	@NotBlank(message = "Status is required")
 	private String status;
+
+	@NotBlank(message = "Priority is required")
 	private String priority;
+
 	private String assignmentGroup;
+	@NotBlank(message = "SLA date is required")
+	@DateTimeFormat(pattern = "yyyy-MM-dd")
 	private String slaDate;
+	@NotNull(message = "Assigned to is required")
 	private int assignedToId;
+	@NotBlank(message = "Assigned to is required")
 	private String assignedTo;
 
-	public int getIncidentId() {
-		return incidentId;
-	}
-
-	public int getAssignedToId() {
-		return assignedToId;
-	}
-
-	public void setAssignedToId(int assignedToId) {
-		this.assignedToId = assignedToId;
-	}
-
-	public void setIncidentId(int incidentId) {
-		this.incidentId = incidentId;
-	}
-
-	public String getTitle() {
-		return title;
-	}
-
-	public void setTitle(String title) {
-		this.title = title;
-	}
-
-	public String getDescription() {
-		return description;
-	}
-
-	public void setDescription(String description) {
-		this.description = description;
-	}
-
-	public String getCreatedBy() {
-		return createdBy;
-	}
-
-	public void setCreatedBy(String createdBy) {
-		this.createdBy = createdBy;
-	}
-
-	public String getCreatedDate() {
-		return createdDate;
-	}
-
-	public void setCreatedDate(String createdDate) {
-		this.createdDate = createdDate;
-	}
-
-	public String getModifiedBy() {
-		return modifiedBy;
-	}
-
-	public void setModifiedBy(String modifiedBy) {
-		this.modifiedBy = modifiedBy;
-	}
-
-	public String getModifiedDate() {
-		return modifiedDate;
-	}
-
-	public void setModifiedDate(String modifiedDate) {
-		this.modifiedDate = modifiedDate;
-	}
-
-	public String getStatus() {
-		return status;
-	}
-
-	public void setStatus(String status) {
-		this.status = status;
-	}
-
-	public String getPriority() {
-		return priority;
-	}
-
-	public void setPriority(String priority) {
-		this.priority = priority;
-	}
-
-	public String getAssignmentGroup() {
-		return assignmentGroup;
-	}
-
-	public void setAssignmentGroup(String assignmentGroup) {
-		this.assignmentGroup = assignmentGroup;
-	}
-
-	public String getSlaDate() {
-		return slaDate;
-	}
-
-	public void setSlaDate(String slaDate) {
-		this.slaDate = slaDate;
-	}
-
-	public String getAssignedTo() {
-		return assignedTo;
-	}
-
-	public void setAssignedTo(String assignedTo) {
-		this.assignedTo = assignedTo;
-	}
 }
